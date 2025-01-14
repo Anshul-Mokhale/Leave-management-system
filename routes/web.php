@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -37,3 +38,8 @@ Route::post('/login', [LoginController::class, 'login'])->name('submit.login');
 
 Route::post('/register', [RegisterController::class, 'register'])->name('register');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
+// admin 
+
+Route::get('/admin/user', [AdminUserController::class, 'index'])->name('admin.user')->middleware('auth');
