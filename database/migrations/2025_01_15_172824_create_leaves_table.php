@@ -15,15 +15,11 @@ class CreateLeavesTable extends Migration
     {
         Schema::create('leaves', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('userid');
-            $table->string('type_of_leave');
+            $table->string('leave_type');
             $table->string('subject');
-            $table->text('content');
-            $table->string('file')->nullable();
+            $table->text('message');
+            $table->string('attachment')->nullable(); // For storing the file path
             $table->timestamps();
-
-            // Add a foreign key constraint if 'userid' references 'id' in the users table
-            $table->foreign('userid')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

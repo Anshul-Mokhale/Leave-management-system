@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserLeaveController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
@@ -42,4 +43,15 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // admin 
 
-Route::get('/admin/user', [AdminUserController::class, 'index'])->name('admin.user')->middleware('auth');
+Route::get('/admin/user', [AdminUserController::class, 'index'])->name('admin.users');
+
+// Fetch users data for DataTable
+Route::get('/admin/user/data', [AdminUserController::class, 'getUsersData'])->name('admin.users.data');
+
+
+// users leaves
+Route::get('/user/leaves', [UserLeaveController::class, 'Leaves'])->name('user.leave')->middleware('auth');
+Route::get('/user/leaves/new-request', function () {
+    return view('newleave');
+})->middleware('auth');
+Route::post('/leaves/submit', [UserLeaveController::class, 'submitLeave'])->name('leaves.submit');

@@ -1,49 +1,56 @@
-@include('partials.header')
+@include('partials.header', ['parameterName' => "Dashboard"])
+
 <body class="bg-gray-100">
     <div class="flex h-screen">
         <!-- Sidebar -->
         @include('partials.sidebar')
 
         <!-- Main Content -->
-        <div class="flex-grow flex flex-col">
+        <div class="flex-grow flex flex-col md:ml-64">
             <!-- Navbar -->
-           @include('partials.navbar')
+            @include('partials.navbar', ['parameterName' => "Dashboard"])
 
-            <!-- Main Content Area -->
-            <main class="flex-grow p-6 bg-gray-100">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Example cards -->
-                    <div class="p-4 bg-white rounded-lg shadow">
-                        <h2 class="text-lg font-semibold">Card Title 1</h2>
-                        <p class="text-gray-600 mt-2">Content goes here.</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow">
-                        <h2 class="text-lg font-semibold">Card Title 2</h2>
-                        <p class="text-gray-600 mt-2">Content goes here.</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-lg shadow">
-                        <h2 class="text-lg font-semibold">Card Title 3</h2>
-                        <p class="text-gray-600 mt-2">Content goes here.</p>
+            <div>
+
+                <!-- Main Content Area -->
+                <div class="p-6">
+                    <!-- Calendar Container -->
+                    <div id="calendar-container"
+                        class="mx-auto bg-white p-4 rounded shadow max-w-xl lg:max-w-xl h-96 overflow-y-auto"
+                        aria-label="Calendar">
+                        <div id="calendar"></div>
                     </div>
                 </div>
-            </main>
+            </div>
+
+            <!-- FullCalendar Setup -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" />
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var calendarEl = document.getElementById('calendar');
+
+                    // Initialize FullCalendar
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        height: '100%', // Utilize full height of the container
+                        contentHeight: 'auto', // Dynamically adjust content height
+                        visibleRange: function (currentDate) {
+                            var startDate = currentDate.clone().startOf('month');
+                            var endDate = startDate.clone().add(5, 'weeks'); // Show 5 weeks
+                            return { start: startDate, end: endDate };
+                        },
+                    });
+
+                    calendar.render();
+                });
+            </script>
         </div>
     </div>
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-    </script>
 </body>
+
 </html>

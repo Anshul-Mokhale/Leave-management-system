@@ -1,57 +1,59 @@
 @include('admin.partials.header', ['parameterName' => "user management"])
-<style>
-    .table-container {
-        overflow-x: scroll; /* Enables horizontal scrolling */
-    }
-</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 <body class="bg-gray-100">
-    <div class="flex h-screen">
+    <div class="flex flex-col lg:flex-row h-screen">
         <!-- Sidebar -->
-        @include('admin.partials.sidebar')
+        <div class="bg-gray-800 text-white w-full lg:w-64 h-auto lg:h-full">
+            @include('admin.partials.sidebar')
+        </div>
 
         <!-- Main Content -->
         <div class="flex-grow flex flex-col">
             <!-- Navbar -->
-            @include('admin.partials.navbar', ['parameterName' => "users"])
+            <div class="bg-white shadow-md w-full">
+                @include('admin.partials.navbar', ['parameterName' => "users"])
+            </div>
 
             <!-- Users Table -->
-            <div class="p-6 bg-white shadow-lg rounded-lg border border-gray-300">
-                <!-- Wrapper div for the horizontal scrolling table -->
-                <div class="table-container w-full"> <!-- This ensures scrolling inside the table -->
-                    <table id="leavesTable" class="min-w-full table-auto bg-white border-collapse text-gray-700">
-                        <thead class="bg-blue-600 text-white">
-                            <tr>
-                                <th class="px-4 py-3 text-left">ID</th>
-                                <th class="px-4 py-3 text-left">Name</th>
-                                <th class="px-4 py-3 text-left">Email</th>
-                                <th class="px-4 py-3 text-left">Phone</th>
-                                <th class="px-4 py-3 text-left">Age</th>
-                                <th class="px-4 py-3 text-left">Designation</th>
-                                <th class="px-4 py-3 text-left">Job ID</th>
-                                <th class="px-4 py-3 text-left">Gender</th>
-                                <th class="px-4 py-3 text-left">Created At</th>
-                                <th class="px-4 py-3 text-left">Updated At</th>
-                                <th class="px-4 py-3 text-left">Admin</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($leaves as $leave)
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="px-4 py-3 text-left">{{ $leave->id }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->name }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->email }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->phone }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->age }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->designation }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->job_id }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->gender }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->created_at }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->updated_at }}</td>
-                                    <td class="px-4 py-3 text-left">{{ $leave->is_admin ? 'Yes' : 'No' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <div class="p-4 flex-grow bg-gray-50">
+                <div class="bg-white shadow-lg rounded-lg border border-gray-300 p-6">
+                    <div class="relative">
+                        <!-- Search Input -->
+                        <input type="text" id="searchInput"
+                            class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Search Users..." />
+                    </div>
+
+                    <!-- Table Container with Scrollable Data -->
+                    <div class="overflow-x-auto">
+                        <div class="max-h-[400px] overflow-y-auto">
+                            <!-- Table with dynamic width adjustment -->
+                            <table class="min-w-full table-auto">
+                                <thead class="bg-gray-200 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-sm text-gray-600">ID</th>
+                                        <th class="px-4 py-2 text-left text-sm text-gray-600">Name</th>
+                                        <th class="px-4 py-2 text-left text-sm text-gray-600">Email</th>
+                                        <th class="px-4 py-2 text-left text-sm text-gray-600">Created At</th>
+                                        <th class="px-4 py-2 text-left text-sm text-gray-600">Updated At</th>
+                                        <th class="px-4 py-2 text-left text-sm text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody">
+                                    <!-- Table data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="pagination" class="mt-4 flex justify-between items-center">
+                        <button id="prevPage" class="px-4 py-2 bg-indigo-500 text-white rounded-lg disabled:opacity-50"
+                            disabled>Previous</button>
+                        <span id="pageInfo" class="text-sm text-gray-600">Page 1 of 1</span>
+                        <button id="nextPage" class="px-4 py-2 bg-indigo-500 text-white rounded-lg">Next</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -59,26 +61,92 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- jQuery and DataTables Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $('#leavesTable').DataTable({
-                paging: true, // Enable pagination
-                searching: true, // Enable search functionality
-                pageLength: 10, // Number of rows per page
-                lengthChange: true, // Allow the user to change number of rows per page
-                info: true, // Display the number of entries
-                autoWidth: false, // Disable auto width adjustment for columns
-                responsive: true, // Make the table responsive
+        $(document).ready(function () {
+            var currentPage = 1;
+            var totalPages = 1;
+            var perPage = 10;
+            var searchTerm = '';
+
+            // Function to load data from the server
+            function loadData() {
+                $.ajax({
+                    url: "{{ route('admin.users.data') }}", // Route to fetch data
+                    type: "GET",
+                    data: {
+                        page: currentPage,
+                        per_page: perPage,
+                        search: searchTerm
+                    },
+                    success: function (response) {
+                        totalPages = response.last_page; // Set total pages from the response
+                        updateTable(response.data);
+                        updatePagination();
+                    }
+                });
+            }
+
+            // Function to update the table
+            function updateTable(users) {
+                var tableBody = $('#userTableBody');
+                tableBody.empty(); // Clear previous data
+
+                users.forEach(function (user) {
+                    var createdAt = new Date(user.created_at).toLocaleString(); // Format the created_at date
+                    var updatedAt = new Date(user.updated_at).toLocaleString(); // Format the updated_at date
+
+                    var row = '<tr class="hover:bg-gray-100">';
+                    row += '<td class="px-4 py-2">' + user.id + '</td>';
+                    row += '<td class="px-4 py-2">' + user.name + '</td>';
+                    row += '<td class="px-4 py-2">' + user.email + '</td>';
+                    row += '<td class="px-4 py-2">' + createdAt + '</td>'; // Display formatted date
+                    row += '<td class="px-4 py-2">' + updatedAt + '</td>'; // Display formatted date
+                    row += '<td> <a href="/admin/users/' + user.id + '/edit" class="text-indigo-600 hover:text-indigo-900"><i class="fas fa-edit"></i></a> </td>';
+                    row += '</tr>';
+
+                    tableBody.append(row);
+                });
+            }
+
+
+            // Function to update pagination controls
+            function updatePagination() {
+                $('#pageInfo').text('Page ' + currentPage + ' of ' + totalPages);
+                $('#prevPage').prop('disabled', currentPage === 1);
+                $('#nextPage').prop('disabled', currentPage === totalPages);
+            }
+
+            // Search functionality
+            $('#searchInput').on('input', function () {
+                searchTerm = $(this).val().toLowerCase();
+                currentPage = 1; // Reset to first page when searching
+                loadData();
             });
+
+            // Next page button click
+            $('#nextPage').click(function () {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadData();
+                }
+            });
+
+            // Previous page button click
+            $('#prevPage').click(function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    loadData();
+                }
+            });
+
+            // Initial load
+            loadData();
         });
     </script>
 </body>
+
 </html>
