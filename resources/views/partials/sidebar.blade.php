@@ -25,7 +25,8 @@
             </li>
             <li class="hover:bg-blue-500 hover:text-white transition-colors">
                 <a href="#" class="block py-3 px-5 rounded-lg flex items-center space-x-3">
-                    <span>Settings</span>
+                    <i class='bx bx-envelope'></i>
+                    <span>All Leaves</span>
                 </a>
             </li>
 

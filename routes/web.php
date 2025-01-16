@@ -55,3 +55,13 @@ Route::get('/user/leaves/new-request', function () {
     return view('newleave');
 })->middleware('auth');
 Route::post('/leaves/submit', [UserLeaveController::class, 'submitLeave'])->name('leaves.submit');
+Route::get('/user/leaves/data', [UserLeaveController::class, 'getLeavesData'])
+    ->name('leaves.data');
+
+// Route::get('/user/leaves/view', function () {
+//     return view('viewleave');
+// })->middleware('auth')->name('leaves.view');
+
+Route::get('/leaves/{id}', [UserLeaveController::class, 'show'])->name('leaves.show');
+
+Route::delete('/leaves/{id}', [UserLeaveController::class, 'destroy'])->name('leaves.destroy');

@@ -30,7 +30,6 @@
 
                     <div class="bg-white shadow-lg rounded-lg border border-gray-300 p-6">
                         <h2 class="text-2xl font-semibold text-gray-800 mb-4">Apply for Leave</h2>
-
                         <form action="{{ route('leaves.submit') }}" method="POST" enctype="multipart/form-data">
                             <!-- Leave Type Dropdown -->
                             @csrf
@@ -69,6 +68,7 @@
                                 <input type="file" id="attachment" name="attachment"
                                     class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             </div>
+
 
                             <!-- Submit Button -->
                             <div>

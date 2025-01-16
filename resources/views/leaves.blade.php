@@ -38,7 +38,7 @@
                                 <!-- Search Input -->
                                 <input type="text" id="searchInput"
                                     class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    placeholder="Search Users..." />
+                                    placeholder="Search Leaves..." />
                             </div>
 
                             <!-- Table Container with Scrollable Data -->
@@ -49,37 +49,16 @@
                                         <thead class="bg-gray-200 sticky top-0">
                                             <tr>
                                                 <th class="px-4 py-2 text-left text-sm text-gray-600">ID</th>
-                                                <th class="px-4 py-2 text-left text-sm text-gray-600">Name</th>
-                                                <th class="px-4 py-2 text-left text-sm text-gray-600">Email</th>
+                                                <th class="px-4 py-2 text-left text-sm text-gray-600">Leave Type</th>
+                                                <th class="px-4 py-2 text-left text-sm text-gray-600">Subject</th>
+                                                <th class="px-4 py-2 text-left text-sm text-gray-600">Status</th>
                                                 <th class="px-4 py-2 text-left text-sm text-gray-600">Created At</th>
                                                 <th class="px-4 py-2 text-left text-sm text-gray-600">Updated At</th>
                                                 <th class="px-4 py-2 text-left text-sm text-gray-600">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="userTableBody">
-                                            <!-- Demo Data -->
-                                            <tr>
-                                                <td class="px-4 py-2 text-gray-700">1</td>
-                                                <td class="px-4 py-2 text-gray-700">John Doe</td>
-                                                <td class="px-4 py-2 text-gray-700">johndoe@example.com</td>
-                                                <td class="px-4 py-2 text-gray-700">2023-01-01</td>
-                                                <td class="px-4 py-2 text-gray-700">2023-01-10</td>
-                                                <td class="px-4 py-2 text-gray-700">
-                                                    <button class="text-blue-500 hover:underline">Edit</button>
-                                                    <button class="text-red-500 hover:underline ml-2">Delete</button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-4 py-2 text-gray-700">2</td>
-                                                <td class="px-4 py-2 text-gray-700">Jane Smith</td>
-                                                <td class="px-4 py-2 text-gray-700">janesmith@example.com</td>
-                                                <td class="px-4 py-2 text-gray-700">2023-02-15</td>
-                                                <td class="px-4 py-2 text-gray-700">2023-02-20</td>
-                                                <td class="px-4 py-2 text-gray-700">
-                                                    <button class="text-blue-500 hover:underline">Edit</button>
-                                                    <button class="text-red-500 hover:underline ml-2">Delete</button>
-                                                </td>
-                                            </tr>
+                                            <!-- Table data will be inserted here -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -97,12 +76,94 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
 
             <!-- Tailwind CSS -->
             <script src="https://cdn.tailwindcss.com"></script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    var currentPage = 1;
+                    var totalPages = 1;
+                    var perPage = 10;
+                    var searchTerm = '';
+
+                    // Function to load data from the server
+                    function loadData() {
+                        $.ajax({
+                            url: "{{ route('leaves.data') }}", // Route to fetch leaves data
+                            type: "GET",
+                            data: {
+                                page: currentPage,
+                                per_page: perPage,
+                                search: searchTerm
+                            },
+                            success: function (response) {
+                                totalPages = response.last_page; // Set total pages from the response
+                                updateTable(response.data);
+                                updatePagination();
+                            }
+                        });
+                    }
+
+                    // Function to update the table with leaves data
+                    function updateTable(leaves) {
+                        var tableBody = $('#userTableBody');
+                        tableBody.empty(); // Clear previous data
+
+                        leaves.forEach(function (leave) {
+                            var createdAt = new Date(leave.created_at).toLocaleString(); // Format created_at
+                            var updatedAt = new Date(leave.updated_at).toLocaleString(); // Format updated_at
+
+                            var row = '<tr class="hover:bg-gray-100">';
+                            row += '<td class="px-4 py-2">' + leave.id + '</td>'; // ID
+                            row += '<td class="px-4 py-2">' + leave.leave_type + '</td>'; // Leave Type
+                            row += '<td class="px-4 py-2">' + leave.subject + '</td>'; // Subject
+                            row += '<td class="px-4 py-2">' + leave.status + '</td>'; // Status
+                            row += '<td class="px-4 py-2">' + createdAt + '</td>'; // Created At
+                            row += '<td class="px-4 py-2">' + updatedAt + '</td>'; // Updated At
+                            row += '<td><a href="/leaves/' + leave.id + '" class="text-indigo-600 hover:text-indigo-900">view</a></td>';
+                            row += '</tr>';
+
+                            tableBody.append(row);
+                        });
+                    }
+
+                    // Function to update pagination controls
+                    function updatePagination() {
+                        $('#pageInfo').text('Page ' + currentPage + ' of ' + totalPages);
+                        $('#prevPage').prop('disabled', currentPage === 1);
+                        $('#nextPage').prop('disabled', currentPage === totalPages);
+                    }
+
+                    // Search functionality
+                    $('#searchInput').on('input', function () {
+                        searchTerm = $(this).val();
+                        currentPage = 1; // Reset to first page when searching
+                        loadData();
+                    });
+
+                    // Next page button click
+                    $('#nextPage').click(function () {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                            loadData();
+                        }
+                    });
+
+                    // Previous page button click
+                    $('#prevPage').click(function () {
+                        if (currentPage > 1) {
+                            currentPage--;
+                            loadData();
+                        }
+                    });
+
+                    // Initial load
+                    loadData();
+                });
+            </script>
+
 </body>
 
 </html>
